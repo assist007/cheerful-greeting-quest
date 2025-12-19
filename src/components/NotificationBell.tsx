@@ -39,6 +39,7 @@ export const NotificationBell = () => {
   const soundEnabledRef = useRef(soundEnabled);
   const latestNotificationAtRef = useRef<string | null>(null);
   const didInitialFetchRef = useRef(false);
+  const playedNotificationIdsRef = useRef<Set<string>>(new Set());
 
   // Keep ref in sync with state
   useEffect(() => {
@@ -74,12 +75,16 @@ export const NotificationBell = () => {
         setUnreadCount(typed.filter((n) => !n.is_read).length);
 
         // Fallback: if realtime is unavailable, polling still detects new notifications
-        const newestAt = typed[0]?.created_at ?? null;
+        const newestNotification = typed[0];
+        const newestAt = newestNotification?.created_at ?? null;
+        const newestId = newestNotification?.id;
         const prevAt = latestNotificationAtRef.current;
 
         if (didInitialFetchRef.current && newestAt && prevAt && new Date(newestAt) > new Date(prevAt)) {
-          if (soundEnabledRef.current) {
-            console.log('New notification detected via polling:', newestAt);
+          // Only play sound if we haven't already played for this notification
+          if (soundEnabledRef.current && newestId && !playedNotificationIdsRef.current.has(newestId)) {
+            console.log('New notification detected via polling:', newestId);
+            playedNotificationIdsRef.current.add(newestId);
             playNotificationSound();
           }
         }
@@ -109,14 +114,17 @@ export const NotificationBell = () => {
           filter: `user_id=eq.${user.id}`,
         },
         (payload) => {
-          console.log('New notification received:', payload);
+          console.log('New notification received via realtime:', payload);
           const newNotification = payload.new as Notification;
           latestNotificationAtRef.current = newNotification.created_at;
           didInitialFetchRef.current = true;
 
           setNotifications((prev) => [newNotification, ...prev]);
           setUnreadCount((prev) => prev + 1);
-          if (soundEnabledRef.current) {
+          
+          // Only play sound if we haven't already played for this notification
+          if (soundEnabledRef.current && !playedNotificationIdsRef.current.has(newNotification.id)) {
+            playedNotificationIdsRef.current.add(newNotification.id);
             playNotificationSound();
           }
         }

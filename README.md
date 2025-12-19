@@ -338,48 +338,191 @@ const Component = () => {
 
 ## 👥 Role-Based Access Control
 
-### Role Types
+This application uses **3 main user roles** with distinct permissions and access levels:
+
+### 📊 Role Overview
+
+| Role | Icon | Access Level | Dashboard |
+|------|------|--------------|-----------|
+| **Admin** | 🛡️ | Full System Access | `/admin` |
+| **Employee** | 👨‍💼 | Order Management | `/employee` |
+| **User** | 👤 | Customer Features | `/` |
+
+---
+
+### 🛡️ Admin Role
+
+**Full administrative control over the entire system.**
+
+| Feature | Route | Description |
+|---------|-------|-------------|
+| Dashboard | `/admin` | View stats (users, orders, revenue) |
+| Product Management | `/admin/products` | Add, edit, delete menu items |
+| User Management | `/admin/users` | View all registered users |
+| Payment Verification | `/admin/payments` | Verify/reject bKash payments |
+| Message Center | `/admin/messages` | Reply to user inquiries |
+| Order Management | `/admin` | Update any order status |
+
+**Admin Capabilities:**
+- ✅ View all system statistics
+- ✅ CRUD operations on products
+- ✅ Manage all orders
+- ✅ Verify mobile payments
+- ✅ Access user information
+- ✅ Reply to all messages
+- ✅ Access employee dashboard
+
+---
+
+### 👨‍💼 Employee Role
+
+**Limited access focused on order processing and fulfillment.**
+
+| Feature | Route | Description |
+|---------|-------|-------------|
+| Employee Dashboard | `/employee` | Order statistics overview |
+| Order Processing | `/employee` | View and update orders |
+| Customer Info | `/employee` | See delivery details |
+
+**Employee Capabilities:**
+- ✅ View order statistics (pending, preparing, delivered)
+- ✅ Update order status (pending → preparing → out_for_delivery → delivered)
+- ✅ View customer names and addresses
+- ✅ Access basic order information
+- ❌ Cannot manage products
+- ❌ Cannot verify payments
+- ❌ Cannot access user management
+
+---
+
+### 👤 User Role (Customer)
+
+**Standard customer access for ordering food.**
+
+| Feature | Route | Description |
+|---------|-------|-------------|
+| Browse Menu | `/` | View available food items |
+| Shopping Cart | `/cart` | Manage cart items |
+| Checkout | `/order` | Place orders |
+| Order History | `/orders` | View past orders |
+| Profile | `/profile` | Update personal info |
+| Messages | `/messages` | Contact support |
+
+**User Capabilities:**
+- ✅ Browse menu by category
+- ✅ Add/remove items from cart
+- ✅ Place orders (COD or bKash)
+- ✅ Track order status
+- ✅ View order history
+- ✅ Update profile information
+- ✅ Send messages to admin/employees
+- ✅ Receive notifications
+- ❌ Cannot access admin features
+- ❌ Cannot access employee dashboard
+
+---
+
+### 🔒 Role Permission Matrix
+
+| Permission | Admin | Employee | User |
+|------------|:-----:|:--------:|:----:|
+| View Menu | ✅ | ✅ | ✅ |
+| Place Orders | ✅ | ✅ | ✅ |
+| View Own Orders | ✅ | ✅ | ✅ |
+| Update Profile | ✅ | ✅ | ✅ |
+| Send Messages | ✅ | ✅ | ✅ |
+| View All Orders | ✅ | ✅ | ❌ |
+| Update Order Status | ✅ | ✅ | ❌ |
+| Manage Products | ✅ | ❌ | ❌ |
+| Verify Payments | ✅ | ❌ | ❌ |
+| View All Users | ✅ | ❌ | ❌ |
+| Reply to Messages | ✅ | ❌ | ❌ |
+
+---
+
+### 🗄️ Database Structure
 
 ```sql
+-- Role enum type
 CREATE TYPE public.app_role AS ENUM ('admin', 'moderator', 'user', 'employee');
+
+-- User roles table (separate from profiles for security)
+CREATE TABLE public.user_roles (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id uuid REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+    role app_role NOT NULL,
+    UNIQUE (user_id, role)
+);
 ```
 
-### Security Function
+### 🔐 Security Function
 
 ```sql
+-- Check if user has a specific role (SECURITY DEFINER prevents RLS recursion)
 CREATE FUNCTION public.has_role(_user_id uuid, _role app_role)
 RETURNS boolean
 LANGUAGE sql
 STABLE
 SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT EXISTS (
+    SELECT 1
+    FROM public.user_roles
+    WHERE user_id = _user_id
+      AND role = _role
+  )
+$$;
 ```
 
-### Role Check Hooks
+### 🪝 Role Check Hooks
 
 ```typescript
-// Check admin role
+// Check if current user is admin
 import { useAdminCheck } from "@/hooks/useAdminCheck";
-const { isAdmin, loading } = useAdminCheck();
 
-// Check employee role
-import { useEmployeeCheck } from "@/hooks/useRoleCheck";
-const { hasRole: isEmployee, loading } = useEmployeeCheck();
-```
-
-### Protected Route Example
-
-```typescript
 const AdminPage = () => {
   const { isAdmin, loading } = useAdminCheck();
   
   if (loading) return <Loader />;
   if (!isAdmin) {
+    toast.error("Access denied. Admin only.");
     navigate('/');
     return null;
   }
   
   return <AdminContent />;
 };
+
+// Check if current user is employee
+import { useEmployeeCheck } from "@/hooks/useRoleCheck";
+
+const EmployeePage = () => {
+  const { hasRole: isEmployee, loading } = useEmployeeCheck();
+  
+  if (loading) return <Loader />;
+  if (!isEmployee) {
+    toast.error("Access denied. Employees only.");
+    navigate('/');
+    return null;
+  }
+  
+  return <EmployeeContent />;
+};
+```
+
+### 🎯 Assigning Roles
+
+To assign a role to a user, insert a record into the `user_roles` table:
+
+```sql
+-- Make a user an admin
+INSERT INTO public.user_roles (user_id, role)
+VALUES ('user-uuid-here', 'admin');
+
+-- Make a user an employee
+INSERT INTO public.user_roles (user_id, role)
+VALUES ('user-uuid-here', 'employee');
 ```
 
 ---

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Bell, Volume2, VolumeX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -36,6 +36,12 @@ export const NotificationBell = () => {
     const stored = localStorage.getItem(SOUND_ENABLED_KEY);
     return stored !== 'false'; // Default to true
   });
+  const soundEnabledRef = useRef(soundEnabled);
+  
+  // Keep ref in sync with state
+  useEffect(() => {
+    soundEnabledRef.current = soundEnabled;
+  }, [soundEnabled]);
 
   useEffect(() => {
     if (!user) return;
@@ -72,7 +78,7 @@ export const NotificationBell = () => {
           const newNotification = payload.new as Notification;
           setNotifications((prev) => [newNotification, ...prev]);
           setUnreadCount((prev) => prev + 1);
-          if (soundEnabled) {
+          if (soundEnabledRef.current) {
             playNotificationSound();
           }
         }
@@ -99,7 +105,7 @@ export const NotificationBell = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user, soundEnabled]);
+  }, [user]);
 
   const toggleSound = async () => {
     const newValue = !soundEnabled;

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Bell } from 'lucide-react';
+import { Bell, Volume2, VolumeX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Popover,
@@ -12,6 +12,7 @@ import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { formatDistanceToNow } from 'date-fns';
 import { playNotificationSound } from '@/utils/notificationSound';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface Notification {
   id: string;
@@ -24,11 +25,17 @@ interface Notification {
   data: any;
 }
 
+const SOUND_ENABLED_KEY = 'notification_sound_enabled';
+
 export const NotificationBell = () => {
   const { user } = useAuth();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [open, setOpen] = useState(false);
+  const [soundEnabled, setSoundEnabled] = useState(() => {
+    const stored = localStorage.getItem(SOUND_ENABLED_KEY);
+    return stored !== 'false'; // Default to true
+  });
 
   useEffect(() => {
     if (!user) return;
@@ -65,7 +72,9 @@ export const NotificationBell = () => {
           const newNotification = payload.new as Notification;
           setNotifications((prev) => [newNotification, ...prev]);
           setUnreadCount((prev) => prev + 1);
-          playNotificationSound();
+          if (soundEnabled) {
+            playNotificationSound();
+          }
         }
       )
       .on(
@@ -90,7 +99,13 @@ export const NotificationBell = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user]);
+  }, [user, soundEnabled]);
+
+  const toggleSound = () => {
+    const newValue = !soundEnabled;
+    setSoundEnabled(newValue);
+    localStorage.setItem(SOUND_ENABLED_KEY, String(newValue));
+  };
 
   const markAsRead = async (id: string) => {
     await supabase
@@ -145,7 +160,19 @@ export const NotificationBell = () => {
       </PopoverTrigger>
       <PopoverContent className="w-80 p-0" align="end">
         <div className="flex items-center justify-between p-4 border-b">
-          <h4 className="font-semibold">Notifications</h4>
+          <div className="flex items-center gap-2">
+            <h4 className="font-semibold">Notifications</h4>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={toggleSound}>
+                  {soundEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4 text-muted-foreground" />}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {soundEnabled ? 'Mute sounds' : 'Enable sounds'}
+              </TooltipContent>
+            </Tooltip>
+          </div>
           <div className="flex gap-1">
             {unreadCount > 0 && (
               <Button variant="ghost" size="sm" onClick={markAllAsRead}>

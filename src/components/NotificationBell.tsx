@@ -37,10 +37,24 @@ export const NotificationBell = () => {
     return stored !== 'false'; // Default to true
   });
   const soundEnabledRef = useRef(soundEnabled);
-  
+  const latestNotificationAtRef = useRef<string | null>(null);
+  const didInitialFetchRef = useRef(false);
+
   // Keep ref in sync with state
   useEffect(() => {
     soundEnabledRef.current = soundEnabled;
+  }, [soundEnabled]);
+
+  // Initialize audio on first user gesture (browser autoplay policy)
+  useEffect(() => {
+    if (!soundEnabled) return;
+
+    const handleFirstGesture = () => {
+      initializeAudio();
+    };
+
+    window.addEventListener('pointerdown', handleFirstGesture, { once: true });
+    return () => window.removeEventListener('pointerdown', handleFirstGesture);
   }, [soundEnabled]);
 
   useEffect(() => {
@@ -55,12 +69,33 @@ export const NotificationBell = () => {
         .limit(20);
 
       if (!error && data) {
-        setNotifications(data as Notification[]);
-        setUnreadCount(data.filter((n) => !n.is_read).length);
+        const typed = data as Notification[];
+        setNotifications(typed);
+        setUnreadCount(typed.filter((n) => !n.is_read).length);
+
+        // Fallback: if realtime is unavailable, polling still detects new notifications
+        const newestAt = typed[0]?.created_at ?? null;
+        const prevAt = latestNotificationAtRef.current;
+
+        if (didInitialFetchRef.current && newestAt && prevAt && new Date(newestAt) > new Date(prevAt)) {
+          if (soundEnabledRef.current) {
+            console.log('New notification detected via polling:', newestAt);
+            playNotificationSound();
+          }
+        }
+
+        if (newestAt) {
+          latestNotificationAtRef.current = newestAt;
+        }
+
+        didInitialFetchRef.current = true;
       }
     };
 
     fetchNotifications();
+
+    // Poll as a backup in case realtime subscription is CLOSED / CHANNEL_ERROR
+    const pollId = window.setInterval(fetchNotifications, 10000);
 
     // Real-time subscription for INSERT and UPDATE with unique channel per user
     const channel = supabase
@@ -76,6 +111,9 @@ export const NotificationBell = () => {
         (payload) => {
           console.log('New notification received:', payload);
           const newNotification = payload.new as Notification;
+          latestNotificationAtRef.current = newNotification.created_at;
+          didInitialFetchRef.current = true;
+
           setNotifications((prev) => [newNotification, ...prev]);
           setUnreadCount((prev) => prev + 1);
           if (soundEnabledRef.current) {
@@ -103,6 +141,7 @@ export const NotificationBell = () => {
       });
 
     return () => {
+      window.clearInterval(pollId);
       supabase.removeChannel(channel);
     };
   }, [user]);

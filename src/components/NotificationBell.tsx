@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { formatDistanceToNow } from 'date-fns';
-import { playNotificationSound } from '@/utils/notificationSound';
+import { playNotificationSound, initializeAudio } from '@/utils/notificationSound';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface Notification {
@@ -101,10 +101,16 @@ export const NotificationBell = () => {
     };
   }, [user, soundEnabled]);
 
-  const toggleSound = () => {
+  const toggleSound = async () => {
     const newValue = !soundEnabled;
     setSoundEnabled(newValue);
     localStorage.setItem(SOUND_ENABLED_KEY, String(newValue));
+    
+    // Play test sound when enabling (this also initializes audio context with user gesture)
+    if (newValue) {
+      await initializeAudio();
+      await playNotificationSound();
+    }
   };
 
   const markAsRead = async (id: string) => {

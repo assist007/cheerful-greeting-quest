@@ -165,13 +165,13 @@ export const NotificationBell = () => {
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80 p-0" align="end">
-        <div className="flex items-center justify-between p-4 border-b">
-          <div className="flex items-center gap-2">
-            <h4 className="font-semibold">Notifications</h4>
+        <div className="flex items-center justify-between p-3 border-b gap-2">
+          <div className="flex items-center gap-1 shrink-0">
+            <h4 className="font-semibold text-sm">Notifications</h4>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={toggleSound}>
-                  {soundEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4 text-muted-foreground" />}
+                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={toggleSound}>
+                  {soundEnabled ? <Volume2 className="h-3.5 w-3.5" /> : <VolumeX className="h-3.5 w-3.5 text-muted-foreground" />}
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
@@ -179,15 +179,15 @@ export const NotificationBell = () => {
               </TooltipContent>
             </Tooltip>
           </div>
-          <div className="flex gap-1">
+          <div className="flex gap-1 shrink-0">
             {unreadCount > 0 && (
-              <Button variant="ghost" size="sm" onClick={markAllAsRead}>
+              <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={markAllAsRead}>
                 Mark read
               </Button>
             )}
             {notifications.length > 0 && (
-              <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={clearAllNotifications}>
-                Clear all
+              <Button variant="ghost" size="sm" className="h-7 px-2 text-xs text-destructive hover:text-destructive" onClick={clearAllNotifications}>
+                Clear
               </Button>
             )}
           </div>

@@ -1,4 +1,4 @@
-# 🍔 QuickBite - Food Delivery Application
+# 🍔 QuickBites - Food Delivery Application
 
 A full-stack food delivery web application built with React, TypeScript, Tailwind CSS, and Supabase.
 
@@ -21,7 +21,7 @@ A full-stack food delivery web application built with React, TypeScript, Tailwin
 
 ## 🎯 Project Overview
 
-**QuickBite** is a comprehensive food delivery platform designed for the Bangladeshi market featuring:
+**QuickBites** is a comprehensive food delivery platform designed for the Bangladeshi market featuring:
 
 - 🛒 **Online Food Ordering** - Browse menu and place orders
 - 💳 **Multiple Payment Options** - Cash on Delivery + bKash
@@ -726,14 +726,6 @@ const channel = supabase
 
 This project is proprietary and confidential.
 
----
-
-## 🤝 Contributing
-
-1. Create a feature branch
-2. Make your changes
-3. Submit a pull request
 
 ---
 
-Built with ❤️ using [Lovable](https://lovable.dev)

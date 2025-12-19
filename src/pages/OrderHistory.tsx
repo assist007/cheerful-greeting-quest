@@ -31,7 +31,6 @@ const OrderHistory = () => {
   useEffect(() => {
     if (!authLoading && !user) {
       navigate("/");
-      return;
     }
   }, [user, authLoading, navigate]);
 
@@ -106,9 +105,7 @@ const OrderHistory = () => {
     );
   }
 
-  if (!user) {
-    return null;
-  }
+  if (!user) return null;
 
   return (
     <div className="min-h-screen bg-background py-8">
@@ -139,18 +136,12 @@ const OrderHistory = () => {
                 <CardHeader className="bg-muted/30 pb-3">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                     <div>
-                      <p className="text-xs text-muted-foreground">
-                        Order ID
-                      </p>
+                      <p className="text-xs text-muted-foreground">Order ID</p>
                       <CardTitle className="text-sm font-mono">
                         {order.id.slice(0, 8)}...
                       </CardTitle>
                     </div>
-                    <Badge
-                      className={`${getStatusColor(
-                        order.status
-                      )} border w-fit`}
-                    >
+                    <Badge className={`${getStatusColor(order.status)} border w-fit`}>
                       {getStatusIcon(order.status)}{" "}
                       {order.status.replace("_", " ")}
                     </Badge>
@@ -158,14 +149,15 @@ const OrderHistory = () => {
                 </CardHeader>
 
                 <CardContent className="pt-4">
+                  {/* Order Items */}
                   <div className="space-y-2 mb-4">
-                    {(order.items as OrderItem[]).map((item, index) => (
+                    {order.items.map((item, index) => (
                       <div key={index} className="flex justify-between text-sm">
                         <span>
                           {item.name} × {item.quantity}
                         </span>
                         <span className="text-muted-foreground">
-                          ৳{(item.price * item.quantity).toFixed(2)}
+                          ৳{item.price * item.quantity}
                         </span>
                       </div>
                     ))}
@@ -175,7 +167,7 @@ const OrderHistory = () => {
                     <div className="flex justify-between font-semibold">
                       <span>Total</span>
                       <span className="text-primary">
-                        ৳{Number(order.total_amount).toFixed(2)}
+                        ৳{order.total_amount}
                       </span>
                     </div>
 

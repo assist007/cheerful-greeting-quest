@@ -13,7 +13,7 @@ const Footer = () => {
                 <span className="text-xl">🍔</span>
               </div>
               <span className="text-2xl font-bold">
-                Quick<span className="text-primary">Bite</span>
+                Quick<span className="text-primary">Bites</span>
               </span>
             </Link>
             <p className="text-muted-foreground text-sm">
@@ -85,11 +85,15 @@ const Footer = () => {
               </li>
               <li className="flex items-center gap-3 text-sm text-muted-foreground">
                 <Phone className="h-4 w-4 text-primary" />
-                <span>+8801576545387</span>
+                <a href="tel:+8801576545387" className="hover:text-primary transition-colors">
+                  +8801576545387
+                </a>
               </li>
               <li className="flex items-center gap-3 text-sm text-muted-foreground">
                 <Mail className="h-4 w-4 text-primary" />
-                <span>redwanhossen007@gmail.com</span>
+                <a href="mailto:redwanhossen007@gmail.com" className="hover:text-primary transition-colors">
+                  redwanhossen007@gmail.com
+                </a>
               </li>
             </ul>
           </div>
@@ -99,7 +103,7 @@ const Footer = () => {
 
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} QuickBite. All rights reserved.
+            © {new Date().getFullYear()} QuickBites. All rights reserved.
           </p>
           <div className="flex gap-6">
             <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">

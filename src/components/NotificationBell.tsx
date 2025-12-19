@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { formatDistanceToNow } from 'date-fns';
+import { playNotificationSound } from '@/utils/notificationSound';
 
 interface Notification {
   id: string;
@@ -64,6 +65,7 @@ export const NotificationBell = () => {
           const newNotification = payload.new as Notification;
           setNotifications((prev) => [newNotification, ...prev]);
           setUnreadCount((prev) => prev + 1);
+          playNotificationSound();
         }
       )
       .on(

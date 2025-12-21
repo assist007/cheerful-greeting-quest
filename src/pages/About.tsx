@@ -6,33 +6,33 @@ const About = () => {
   const features = [
     {
       icon: Utensils,
-      title: "অনলাইন অর্ডার",
-      description: "ঘরে বসে মেনু দেখুন এবং সহজে অর্ডার করুন"
+      title: "Online Ordering",
+      description: "Browse our menu and place orders easily from home"
     },
     {
       icon: Truck,
-      title: "দ্রুত ডেলিভারি",
-      description: "আপনার দরজায় দ্রুত খাবার পৌঁছে দিই"
+      title: "Fast Delivery",
+      description: "Quick delivery right to your doorstep"
     },
     {
       icon: CreditCard,
-      title: "একাধিক পেমেন্ট",
-      description: "ক্যাশ অন ডেলিভারি ও বিকাশ পেমেন্ট সুবিধা"
+      title: "Multiple Payments",
+      description: "Cash on Delivery and bKash payment options"
     },
     {
       icon: Users,
-      title: "মাল্টি-রোল সিস্টেম",
-      description: "অ্যাডমিন, এমপ্লয়ী এবং কাস্টমার আলাদা প্যানেল"
+      title: "Multi-Role System",
+      description: "Separate panels for Admin, Employee, and Customers"
     },
     {
       icon: Moon,
-      title: "ডার্ক/লাইট থিম",
-      description: "আপনার পছন্দমতো থিম ব্যবহার করুন"
+      title: "Dark/Light Theme",
+      description: "Choose your preferred theme for comfortable viewing"
     },
     {
       icon: Bell,
-      title: "রিয়েল-টাইম নোটিফিকেশন",
-      description: "অর্ডার আপডেট এবং মেসেজ তাৎক্ষণিক জানুন"
+      title: "Real-time Notifications",
+      description: "Instant updates on orders and messages"
     }
   ];
 
@@ -47,8 +47,8 @@ const About = () => {
           Quick<span className="text-primary">Bites</span>
         </h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          বাংলাদেশের জন্য তৈরি একটি আধুনিক ফুড ডেলিভারি প্ল্যাটফর্ম। 
-          সহজে অর্ডার করুন, দ্রুত ডেলিভারি পান।
+          A modern food delivery platform built for Bangladesh. 
+          Order easily, get fast delivery.
         </p>
       </div>
 
@@ -68,9 +68,9 @@ const About = () => {
         ))}
       </div>
 
-      {/* Tech Stack - Simple */}
+      {/* Tech Stack */}
       <div className="bg-muted/50 rounded-xl p-8 mb-12">
-        <h2 className="text-xl font-bold mb-4 text-center">তৈরি করা হয়েছে</h2>
+        <h2 className="text-xl font-bold mb-4 text-center">Built With</h2>
         <div className="flex flex-wrap justify-center gap-3">
           {["React", "TypeScript", "Tailwind CSS", "Supabase", "Shadcn/UI"].map((tech) => (
             <span 
@@ -86,12 +86,12 @@ const About = () => {
       {/* CTA */}
       <div className="text-center">
         <p className="text-muted-foreground mb-4">
-          এখনই অর্ডার শুরু করুন
+          Start ordering now
         </p>
         <Link to="/">
           <Button size="lg" className="gap-2">
             <Utensils className="h-5 w-5" />
-            মেনু দেখুন
+            View Menu
           </Button>
         </Link>
       </div>

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Facebook, Instagram, Twitter, Mail, Phone, MapPin } from "lucide-react";
+import { Facebook, Instagram, Twitter, Mail, Phone, MapPin, Info } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -45,16 +45,39 @@ const Footer = () => {
           <div>
             <h3 className="font-bold text-lg mb-4">Quick Links</h3>
             <ul className="space-y-3">
-              {["Home", "Menu", "About Us", "Contact"].map((link) => (
-                <li key={link}>
-                  <a
-                    href="#"
-                    className="text-muted-foreground hover:text-primary transition-colors text-sm"
-                  >
-                    {link}
-                  </a>
-                </li>
-              ))}
+              <li>
+                <Link
+                  to="/"
+                  className="text-muted-foreground hover:text-primary transition-colors text-sm"
+                >
+                  Home
+                </Link>
+              </li>
+              <li>
+                <a
+                  href="/#menu"
+                  className="text-muted-foreground hover:text-primary transition-colors text-sm"
+                >
+                  Menu
+                </a>
+              </li>
+              <li>
+                <Link
+                  to="/about"
+                  className="text-muted-foreground hover:text-primary transition-colors text-sm flex items-center gap-1"
+                >
+                  <Info className="h-3 w-3" />
+                  About QuickBites
+                </Link>
+              </li>
+              <li>
+                <a
+                  href="#contact"
+                  className="text-muted-foreground hover:text-primary transition-colors text-sm"
+                >
+                  Contact
+                </a>
+              </li>
             </ul>
           </div>
 

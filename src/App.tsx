@@ -23,6 +23,7 @@ import Messages from "@/pages/Messages";
 import AdminMessages from "@/pages/AdminMessages";
 import AdminUserManagement from "@/pages/AdminUserManagement";
 import PaymentVerification from "@/pages/PaymentVerification";
+import About from "@/pages/About";
 
 const queryClient = new QueryClient();
 
@@ -55,6 +56,7 @@ const App = () => {
                       <Route path="/orders" element={<OrderHistory />} />
                       <Route path="/messages" element={<Messages />} />
                       <Route path="/profile" element={<Profile />} />
+                      <Route path="/about" element={<About />} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>
                   </div>
